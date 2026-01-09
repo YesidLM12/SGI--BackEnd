@@ -2,6 +2,7 @@ package com.tracker.sgi.entities;
 
 import java.util.List;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

@@ -25,7 +25,6 @@ public class UserDetailsImpl implements UserDetails {
         this.id = usuario.getId();
         this.email = usuario.getEmail();
         this.password = usuario.getPassword();
-        this.rol = usuario.getRol();
     }
 
     @Override

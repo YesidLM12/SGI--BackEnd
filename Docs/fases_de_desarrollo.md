@@ -30,7 +30,9 @@ Establecer una base técnica sólida para el desarrollo del sistema.
 
 ---
 
-## 🔐 FASE 1 – Usuarios, Autenticación y Seguridad (RBAC)
+## 🔐 FASE 1 – Usuarios, Autenticación y Seguridad (RBAC) ✅
+
+**Estado**: Completada
 
 ### Objetivo
 
