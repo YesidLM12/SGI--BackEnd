@@ -31,10 +31,10 @@ public class Productos {
     private Long id;
 
     private String nombre;
-    private String descripcion;
     private BigDecimal precio_compra;
     private BigDecimal precio_venta;
     private int stock_actual;
+    private int stock_minimo;
     private boolean disponible;
     private LocalDate fecha_creacion;
 

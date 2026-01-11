@@ -1,0 +1,101 @@
+package com.tracker.sgi.service;
+
+import com.tracker.sgi.entities.MovimientoInventario;
+import com.tracker.sgi.entities.Productos;
+import com.tracker.sgi.exception.ResourceNotFoundException;
+import com.tracker.sgi.repository.MovimientoInventarioRepository;
+import com.tracker.sgi.repository.ProductoRepository;
+import com.tracker.sgi.util.enums.TipoMovimientoEnum;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+public class MovimientosService {
+	private final ProductoRepository productoRepository;
+	private final MovimientoInventarioRepository movimientoInventarioRepository;
+
+	/**
+	 * =================================================
+	 * METODOS PARA GESTIONAR INVENTARIO
+	 * =================================================
+	 */
+
+	public MovimientoInventario entrada(Productos producto, int cantidad, String motivo) {
+		MovimientoInventario movimiento = MovimientoInventario
+				.builder()
+				.producto(producto)
+				.tipo_movimiento(TipoMovimientoEnum.ENTRADA)
+				.cantidad(cantidad)
+				.motivo(motivo != null ? motivo : "Entrada")
+				.fecha_movimiento(LocalDate.now())
+				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.build();
+
+		movimientoInventarioRepository.save(movimiento);
+		return movimiento;
+	}
+
+	public MovimientoInventario Salida(Productos producto, int cantidad, String motivo) {
+		MovimientoInventario movimiento = MovimientoInventario
+				.builder()
+				.producto(producto)
+				.tipo_movimiento(TipoMovimientoEnum.SALIDA)
+				.cantidad(cantidad)
+				.motivo(motivo != null ? motivo : "Salida")
+				.fecha_movimiento(LocalDate.now())
+				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.build();
+		return movimientoInventarioRepository.save(movimiento);
+	}
+
+	public MovimientoInventario ajustePositivo(Productos producto, int cantidad, String motivo) {
+		MovimientoInventario movimiento = MovimientoInventario
+				.builder()
+				.producto(producto)
+				.tipo_movimiento(TipoMovimientoEnum.AJUSTE_POSITIVO)
+				.cantidad(cantidad)
+				.motivo(motivo != null ? motivo : "Ajuste Positivo")
+				.fecha_movimiento(LocalDate.now())
+				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.build();
+		return movimientoInventarioRepository.save(movimiento);
+	}
+
+	public MovimientoInventario ajusteNegativo(Productos producto, int cantidad, String motivo) {
+		MovimientoInventario movimiento = MovimientoInventario
+				.builder()
+				.producto(producto)
+				.tipo_movimiento(TipoMovimientoEnum.AJUSTE_NEGATIVO)
+				.cantidad(cantidad)
+				.motivo(motivo != null ? motivo : "Ajuste Negativo")
+				.fecha_movimiento(LocalDate.now())
+				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.build();
+		return movimientoInventarioRepository.save(movimiento);
+	}
+
+	/**
+	 * =================================================
+	 * METODOS PARA OBTENER MOVIMIENTOS
+	 * =================================================
+	 */
+	public Page<MovimientoInventario> obtenerTodosLosMovimientos(Pageable pageable) {
+		return movimientoInventarioRepository.findAll(pageable);
+	}
+
+	public Page<MovimientoInventario> obtenerMovimientosPorProducto(Long productoId, Pageable pageable) {
+		Page<MovimientoInventario> movimientos = movimientoInventarioRepository.findByProductoId(productoId, pageable);
+
+		if (movimientos.isEmpty()) {
+			throw new ResourceNotFoundException("No se encontraron movimientos para el producto con ID: " + productoId);
+		}
+		
+		return movimientos;
+	}
+}
