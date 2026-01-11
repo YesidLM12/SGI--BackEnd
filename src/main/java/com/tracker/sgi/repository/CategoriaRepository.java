@@ -8,4 +8,6 @@ import com.tracker.sgi.entities.Categorias;
 @Repository 
 public interface CategoriaRepository extends JpaRepository<Categorias, Long> {
 
+    Categorias findByNombre(Categorias categoria);
+
 }

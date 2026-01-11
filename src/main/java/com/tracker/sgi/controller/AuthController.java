@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/registro")
     public ResponseEntity<Map<String, String>> registro(@RequestBody RegistroRequestDto dto) {
         authService.registrarUsuario(dto);

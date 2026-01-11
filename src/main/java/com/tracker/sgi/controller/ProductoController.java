@@ -1,5 +1,6 @@
 package com.tracker.sgi.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tracker.sgi.dto.request.ProductoRequestDto;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,51 +30,56 @@ import org.springframework.web.bind.annotation.PatchMapping;
 public class ProductoController {
     private final ProductoService productoService;
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
     @PutMapping("/{id}")
-    public void actualizarProducto(@PathVariable Long id, @RequestBody ProductoRequestDto dto) {
+    public void actualizarProducto(@PathVariable Long id, @RequestBody ProductoRequestDto dto)
+            throws AccessDeniedException {
         productoService.actualizarProductoCompleto(id, dto);
     }
 
-    @PatchMapping("/{id}/precio-compra")
-    public void actualizarPrecioCompra(@PathVariable Long id, @RequestBody BigDecimal precioCompra) {
-        productoService.actualizarPrecioCompra(id, precioCompra);
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
+    @PatchMapping("/{id}/precio")
+    public void actualizarPrecio(@PathVariable Long id, @RequestBody BigDecimal precio) {
+        productoService.actualizarPrecio(id, precio);
     }
 
-    @PatchMapping("/{id}/precio-venta")
-    public void actualizarPrecioVenta(@PathVariable Long id, @RequestBody BigDecimal precioVenta) {
-        productoService.actualizarPrecioVenta(id, precioVenta);
-    }
-
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
     @PatchMapping("/{id}/stock-minimo")
     public void actualizarStockMinimo(@PathVariable Long id, @RequestBody int stockMinimo) {
         productoService.actualizarStockMinimo(id, stockMinimo);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
     @PatchMapping("/{id}/disponibilidad")
     public void actualizarDisponibilidad(@PathVariable Long id, @RequestBody boolean disponible) {
         productoService.actualizarDisponibilidad(id, disponible);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
     @DeleteMapping("/{id}")
     public void eliminarProducto(@PathVariable Long id) {
         productoService.eliminarProductoPorId(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA')")
     @DeleteMapping("/{nombre}")
     public void eliminarProductoPorNombre(@PathVariable String nombre) {
         productoService.eliminarProductoPorNombre(nombre);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
     @GetMapping("/{id}")
     public Productos obtenerProducto(@PathVariable Long id) {
         return productoService.obtenerProductoPorId(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
     @GetMapping("/{nombre}")
     public Productos obtenerProductoPorNombre(@PathVariable String nombre) {
         return productoService.obtenerProductoPorNombre(nombre);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
     @GetMapping
     public Page<Productos> obtenerTodosLosProductos(@PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
         return productoService.obtenerTodosLosProductos(pageable);

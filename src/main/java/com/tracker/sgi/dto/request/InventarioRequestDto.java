@@ -1,7 +1,9 @@
 package com.tracker.sgi.dto.request;
 
+import com.tracker.sgi.entities.Productos;
+
 public record InventarioRequestDto(
-    String nombre,
+    Productos producto,
     int cantidad,
     String motivo
 ) {

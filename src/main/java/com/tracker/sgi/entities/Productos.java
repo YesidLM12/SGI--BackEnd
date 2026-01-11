@@ -1,7 +1,7 @@
 package com.tracker.sgi.entities;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -31,12 +31,11 @@ public class Productos {
     private Long id;
 
     private String nombre;
-    private BigDecimal precio_compra;
-    private BigDecimal precio_venta;
+    private BigDecimal precio;
     private int stock_actual;
     private int stock_minimo;
     private boolean disponible;
-    private LocalDate fecha_creacion;
+    private LocalDateTime fecha_creacion;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)

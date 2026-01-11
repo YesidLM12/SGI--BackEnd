@@ -19,6 +19,7 @@ import com.tracker.sgi.security.jwt.JwtProvider;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;

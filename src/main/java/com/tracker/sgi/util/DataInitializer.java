@@ -6,8 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.tracker.sgi.entities.Categorias;
 import com.tracker.sgi.entities.Rol;
 import com.tracker.sgi.entities.Usuarios;
+import com.tracker.sgi.repository.CategoriaRepository;
 import com.tracker.sgi.repository.RolRepository;
 import com.tracker.sgi.repository.UsuarioRepository;
 import com.tracker.sgi.util.enums.RolEnum;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class DataInitializer implements CommandLineRunner {
     private final RolRepository rolRepository;
     private final UsuarioRepository userRepository;
+    private final CategoriaRepository categoriaRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -28,8 +31,17 @@ public class DataInitializer implements CommandLineRunner {
             rolRepository.saveAll(List.of(
                     new Rol(null, RolEnum.ADMIN),
                     new Rol(null, RolEnum.ALMACENISTA),
-                    new Rol(null, RolEnum.VENDEDOR)
-                ));
+                    new Rol(null, RolEnum.VENDEDOR))
+                );
+        }
+
+        if (categoriaRepository.count() == 0) {
+            categoriaRepository.saveAll(List.of(
+                    new Categorias(null, "Electrónica"),
+                    new Categorias(null, "Papeleria"),
+                    new Categorias(null, "Aseo"),
+                    new Categorias(null, "Alimentos"))
+                );
         }
 
         if (!userRepository.existsByNombre("admin")) {

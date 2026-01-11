@@ -1,34 +1,32 @@
 package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.request.ProductoRequestDto;
-import com.tracker.sgi.entities.MovimientoInventario;
 import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.exception.InvalidDataException;
 import com.tracker.sgi.exception.ResourceNotFoundException;
+import com.tracker.sgi.repository.CategoriaRepository;
 import com.tracker.sgi.repository.ProductoRepository;
 import com.tracker.sgi.util.validations.ProductoValidate;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class ProductoService {
+
 	private final ProductoRepository productoRepository;
-	private final MovimientosService movimientosService;
+	private final CategoriaRepository categoriaRepository;
 
-	/**
-	 * =================================================
-	 * METODOS PARA GESTIONAR INVENTARIO
-	 * =================================================
-	 */
-
-	public Productos entradaProducto(ProductoRequestDto dto) {
+	public Productos agregarProducto(ProductoRequestDto dto) {
 		// Validar que el producto no exista
 		if (productoRepository.findByNombre(dto.nombre()).isPresent()) {
 			throw new InvalidDataException("El producto ya existe");
@@ -37,102 +35,28 @@ public class ProductoService {
 		Productos producto = Productos
 				.builder()
 				.nombre(dto.nombre())
-				.precio_compra(dto.precio_compra())
-				.precio_venta(dto.precio_venta())
+				.precio(dto.precio())
 				.stock_minimo(dto.stock_minimo()) // util para alertas
-				.disponible(dto.disponible())
-				.categoria(dto.categoria())
-				.fecha_creacion(LocalDate.now())
+				.disponible(dto.disponible() || true)
+				.categoria(categoriaRepository.findByNombre(dto.categoria()))
+				.fecha_creacion(LocalDateTime.now())
 				.build();
 
-		MovimientoInventario movimiento = movimientosService.entrada(producto, dto.stock_actual(), "Entrada inicial");
-
-		producto.setStock_actual(movimiento.getStock_resultante());
 		ProductoValidate.validate(producto);
-
 		return productoRepository.save(producto);
-
-		/*
-		 * La entrada de productos debe relacionarse
-		 * con la compra (proveedor).
-		 */
-	}
-
-	public Productos salidaProducto(String nombreProducto, int cantidad, String motivo) {
-		// Verificar existencia del producto
-		Productos productoExistente = productoRepository.findByNombre(nombreProducto)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
-
-		// Validar que el stock sea suficiente
-		if (productoExistente.getStock_actual() < cantidad) {
-			throw new InvalidDataException("No hay suficiente stock");
-		}
-
-		// Realizar el movimiento
-		MovimientoInventario movimiento = movimientosService.Salida(productoExistente, cantidad, motivo);
-
-		// Establecer el stock actual después del movimiento
-		productoExistente.setStock_actual(movimiento.getStock_resultante());
-
-		// Guardar el producto con el cambio de stock
-		return productoRepository.save(productoExistente);
-
-		/*
-		 * La salida de productos debe relacionarse
-		 * con la venta (cliente).
-		 */
-	}
-
-	public Productos ajustePositivoProducto(String nombreProducto, int cantidad, String motivo) {
-		// Verificar existencia del producto
-		Productos productoExistente = productoRepository.findByNombre(nombreProducto)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
-
-		// Realizar el movimiento
-		MovimientoInventario movimiento = movimientosService.ajustePositivo(productoExistente, cantidad, motivo);
-
-		// Establecer el stock actual después del movimiento
-		productoExistente.setStock_actual(movimiento.getStock_resultante());
-
-		// Guardar el producto con el cambio de stock
-		return productoRepository.save(productoExistente);
-	}
-
-	public Productos ajusteNegativoProducto(String nombreProducto, int cantidad, String motivo) {
-		// Verificar existencia del producto
-		Productos productoExistente = productoRepository.findByNombre(nombreProducto)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
-
-		// Realizar el movimiento
-		MovimientoInventario movimiento = movimientosService.ajusteNegativo(productoExistente, cantidad, motivo);
-
-		// Establecer el stock actual después del movimiento
-		productoExistente.setStock_actual(movimiento.getStock_resultante());
-
-		// Guardar el producto con el cambio de stock
-		return productoRepository.save(productoExistente);
 	}
 
 	/**
 	 * =================================================
-	 * METODOS PARA ACTUALIZAR PRODUCTOS DE FORMA PARCIAL
+	 * ACTUALIZAR PRODUCTOS DE FORMA PARCIAL
 	 * =================================================
 	 */
 
-	public Productos actualizarPrecioCompra(long id, BigDecimal precioCompra) {
+	public Productos actualizarPrecio(long id, BigDecimal precio) {
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
-		productoExistente.setPrecio_compra(precioCompra);
-		ProductoValidate.validate(productoExistente);
-		return productoRepository.save(productoExistente);
-	}
-
-	public Productos actualizarPrecioVenta(long id, BigDecimal precioVenta) {
-		Productos productoExistente = productoRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
-
-		productoExistente.setPrecio_venta(precioVenta);
+		productoExistente.setPrecio(precio);
 		ProductoValidate.validate(productoExistente);
 		return productoRepository.save(productoExistente);
 	}
@@ -156,17 +80,28 @@ public class ProductoService {
 
 	/**
 	 * =================================================
-	 * METODO PARA REEMPLAZAR PRODUCTOS DE FORMA COMPLETA
+	 * ACTUALIZAR PRODUCTO
 	 * =================================================
+	 * 
+	 * @throws AccessDeniedException
 	 */
 
-	public Productos actualizarProductoCompleto(long id, ProductoRequestDto dto) {
+	public Productos actualizarProductoCompleto(long id, ProductoRequestDto dto) throws AccessDeniedException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		boolean esAdminOrAlmacenista = authentication.getAuthorities().stream()
+				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")
+						|| auth.getAuthority().equals("ROLE_ALMACENISTA"));
+
+		if (!esAdminOrAlmacenista) {
+			throw new AccessDeniedException("Acción no disponible para el usuario");
+		}
+
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
 		productoExistente.setNombre(dto.nombre());
-		productoExistente.setPrecio_compra(dto.precio_compra());
-		productoExistente.setPrecio_venta(dto.precio_venta());
+		productoExistente.setPrecio(dto.precio());
 		productoExistente.setStock_actual(dto.stock_actual());
 		productoExistente.setStock_minimo(dto.stock_minimo());
 		productoExistente.setDisponible(dto.disponible());
@@ -179,7 +114,7 @@ public class ProductoService {
 
 	/**
 	 * =================================================
-	 * METODOS PARA OBTENER PRODUCTOS
+	 *OBTENER PRODUCTOS
 	 * =================================================
 	 */
 	public Page<Productos> obtenerTodosLosProductos(Pageable pageable) {
@@ -198,7 +133,7 @@ public class ProductoService {
 
 	/**
 	 * =================================================
-	 * METODOS PARA ELIMINAR PRODUCTOS
+	 * ELIMINAR PRODUCTO
 	 * =================================================
 	 */
 	public void eliminarProductoPorNombre(String nombreProducto) {

@@ -58,7 +58,9 @@ Gestionar el acceso al sistema mediante autenticación segura y control de permi
 
 ---
 
-## 📦 FASE 2 – Módulo de Inventario
+## 📦 FASE 2 – Módulo de Inventario ✅
+
+**Estado:** Completada
 
 ### Objetivo
 
