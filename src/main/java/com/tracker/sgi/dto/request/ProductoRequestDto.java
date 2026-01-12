@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public record ProductoRequestDto(
 				String nombre,
 				BigDecimal precio,
-				int stock_actual,
+				int cantidad,
 				int stock_minimo,
 				boolean disponible,
 				Categorias categoria

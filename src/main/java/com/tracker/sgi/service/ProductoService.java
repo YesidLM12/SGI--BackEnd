@@ -102,7 +102,7 @@ public class ProductoService {
 
 		productoExistente.setNombre(dto.nombre());
 		productoExistente.setPrecio(dto.precio());
-		productoExistente.setStock_actual(dto.stock_actual());
+		productoExistente.setStock_actual(dto.cantidad());
 		productoExistente.setStock_minimo(dto.stock_minimo());
 		productoExistente.setDisponible(dto.disponible());
 		productoExistente.setCategoria(dto.categoria());

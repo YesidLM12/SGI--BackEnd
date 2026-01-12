@@ -3,14 +3,11 @@ package com.tracker.sgi.service;
 import com.tracker.sgi.entities.MovimientoInventario;
 import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.exception.InvalidStockMovementException;
-import com.tracker.sgi.exception.ResourceNotFoundException;
 import com.tracker.sgi.repository.MovimientoInventarioRepository;
 import com.tracker.sgi.repository.ProductoRepository;
 import com.tracker.sgi.util.enums.TipoMovimientoEnum;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
@@ -37,7 +34,7 @@ public class MovimientosService {
 	}
 
 
-	public MovimientoInventario Salida(Productos producto, int cantidad, String motivo) {
+	public MovimientoInventario salida(Productos producto, int cantidad, String motivo) {
 
 		if (producto.getStock_actual() < cantidad) {
 			throw new InvalidStockMovementException("No hay suficiente stock");
@@ -95,25 +92,5 @@ public class MovimientosService {
 		productoRepository.save(producto);
 
 		return movimientoInventarioRepository.save(movimiento);
-	}
-
-	/**
-	 * =================================================
-	 * OBTENER MOVIMIENTOS
-	 * =================================================
-	 */
-	public Page<MovimientoInventario> obtenerTodosLosMovimientos(Pageable pageable) {
-		return movimientoInventarioRepository.findAll(pageable);
-	}
-
-	
-	public Page<MovimientoInventario> obtenerMovimientosPorProducto(Long productoId, Pageable pageable) {
-		Page<MovimientoInventario> movimientos = movimientoInventarioRepository.findByProductoId(productoId, pageable);
-
-		if (movimientos.isEmpty()) {
-			throw new ResourceNotFoundException("No se encontraron movimientos para el producto con ID: " + productoId);
-		}
-
-		return movimientos;
 	}
 }

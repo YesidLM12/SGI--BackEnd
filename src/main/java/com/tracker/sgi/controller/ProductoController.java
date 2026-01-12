@@ -17,11 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
@@ -65,23 +61,5 @@ public class ProductoController {
     @DeleteMapping("/{nombre}")
     public void eliminarProductoPorNombre(@PathVariable String nombre) {
         productoService.eliminarProductoPorNombre(nombre);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
-    @GetMapping("/{id}")
-    public Productos obtenerProducto(@PathVariable Long id) {
-        return productoService.obtenerProductoPorId(id);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
-    @GetMapping("/{nombre}")
-    public Productos obtenerProductoPorNombre(@PathVariable String nombre) {
-        return productoService.obtenerProductoPorNombre(nombre);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','ALMACENISTA','VENDEDOR')")
-    @GetMapping
-    public Page<Productos> obtenerTodosLosProductos(@PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
-        return productoService.obtenerTodosLosProductos(pageable);
     }
 }

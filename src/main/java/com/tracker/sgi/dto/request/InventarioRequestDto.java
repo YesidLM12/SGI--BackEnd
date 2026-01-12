@@ -1,11 +1,12 @@
 package com.tracker.sgi.dto.request;
 
-import com.tracker.sgi.entities.Productos;
 
 public record InventarioRequestDto(
-    Productos producto,
+    Long productoId,
     int cantidad,
-    String motivo
+    String motivo,
+    Long proveedorId,
+    Long clienteId
 ) {
 
 }

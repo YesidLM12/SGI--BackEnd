@@ -27,9 +27,9 @@ public class Proveedores {
     private Long id;
     private String nit_rut;
     private String razon_social;
-    private String contacto_nombre;
-    private String contacto_telefono;
-    private String contacto_email;
+    private String nombre;
+    private String telefono;
+    private String email;
     private String direccion;
 
     @OneToMany(mappedBy = "proveedor")
