@@ -26,7 +26,6 @@ public class Proveedores {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nit_rut;
-    private String razon_social;
     private String nombre;
     private String telefono;
     private String email;

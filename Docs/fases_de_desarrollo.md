@@ -90,7 +90,9 @@ El stock **no se modifica directamente**, solo a través de movimientos.
 
 ---
 
-## 🧑‍🤝‍🧑 FASE 3 – Clientes y Proveedores
+## 🧑‍🤝‍🧑 FASE 3 – Clientes y Proveedores ✅
+
+**Estado:** Completada
 
 ### Objetivo
 
