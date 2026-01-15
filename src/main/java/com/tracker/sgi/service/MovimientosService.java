@@ -30,6 +30,9 @@ public class MovimientosService {
 				.build();
 
 		movimientoInventarioRepository.save(movimiento);
+
+		producto.setStock_actual(movimiento.getStock_resultante());
+		productoRepository.save(producto);
 		return movimiento;
 	}
 
@@ -65,7 +68,7 @@ public class MovimientosService {
 				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
 				.build();
 
-		producto.setStock_actual(producto.getStock_actual() + cantidad);
+		producto.setStock_actual(movimiento.getStock_resultante());
 		productoRepository.save(producto);
 
 		return movimientoInventarioRepository.save(movimiento);
@@ -88,7 +91,7 @@ public class MovimientosService {
 				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
 				.build();
 
-		producto.setStock_actual(producto.getStock_actual() - cantidad);
+		producto.setStock_actual(movimiento.getStock_resultante());
 		productoRepository.save(producto);
 
 		return movimientoInventarioRepository.save(movimiento);

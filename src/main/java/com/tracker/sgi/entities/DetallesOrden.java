@@ -1,5 +1,7 @@
 package com.tracker.sgi.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,6 +37,6 @@ public class DetallesOrden {
     private Productos producto;
 
     private int cantidad;
-    private double precio_unitario;
-    private double subtotal;
+    private BigDecimal precio_unitario;
+    private BigDecimal subtotal;
 }
