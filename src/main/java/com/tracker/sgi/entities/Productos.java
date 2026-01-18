@@ -42,9 +42,9 @@ public class Productos {
     private Categorias categoria;
 
     @ManyToOne
-    @JoinColumn(name = "proveedor_id", nullable = false)
+    @JoinColumn(name = "proveedor_id")
     private Proveedores proveedor;
 
     @OneToMany(mappedBy = "producto")
-    private List<MovimientoInventario> movimientos;   
+    private List<MovimientoInventario> movimientos;
 }
