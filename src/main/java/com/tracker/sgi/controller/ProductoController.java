@@ -38,8 +38,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public Map<String, String> actualizarProducto(@PathVariable Long id, @RequestBody ProductoRequestDto dto)
-            throws AccessDeniedException {
+    public Map<String, String> actualizarProducto(@PathVariable Long id, @RequestBody ProductoRequestDto dto) {
         productoService.actualizarProductoCompleto(id, dto);
         return Map.of("message", "Producto actualizado exitosamente");
     }

@@ -14,11 +14,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 @Service
@@ -28,7 +25,7 @@ public class ProductoService {
 	private final ProductoRepository productoRepository;
 	private final CategoriaRepository categoriaRepository;
 
-	public ProductoResponseDto agregarProducto(ProductoRequestDto dto) {
+	public void agregarProducto(ProductoRequestDto dto) {
 		// Validar que el producto no exista
 		if (productoRepository.findByNombre(dto.nombre()).isPresent()) {
 			throw new InvalidDataException("El producto ya existe");
@@ -49,24 +46,9 @@ public class ProductoService {
 
 		ProductoValidate.validate(producto);
 		productoRepository.save(producto);
-
-		return new ProductoResponseDto(
-						producto.getNombre(),
-						producto.getPrecio(),
-						producto.getStock_actual(),
-						producto.getStock_minimo(),
-						producto.getCategoria().getNombre(),
-						producto.getFecha_creacion()
-		);
 	}
 
-	/**
-	 * =================================================
-	 * ACTUALIZAR PRODUCTOS DE FORMA PARCIAL
-	 * =================================================
-	 */
-
-	public Productos actualizarProductoParcial(long id, ActualizarProductoRequestDto dto) {
+	public void actualizarProductoParcial(long id, ActualizarProductoRequestDto dto) {
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
@@ -79,28 +61,10 @@ public class ProductoService {
 		if (dto.disponible() != productoExistente.isDisponible()) {
 			productoExistente.setDisponible(dto.disponible());
 		}
-		return productoRepository.save(productoExistente);
+		productoRepository.save(productoExistente);
 	}
 
-	/**
-	 * =================================================
-	 * ACTUALIZAR PRODUCTO
-	 * =================================================
-	 * 
-	 * @throws AccessDeniedException
-	 */
-
-	public Productos actualizarProductoCompleto(long id, ProductoRequestDto dto) throws AccessDeniedException {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		boolean esAdminOrAlmacenista = authentication.getAuthorities().stream()
-				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")
-						|| auth.getAuthority().equals("ROLE_ALMACENISTA"));
-
-		if (!esAdminOrAlmacenista) {
-			throw new AccessDeniedException("Acción no disponible para el usuario");
-		}
-
+	public void actualizarProductoCompleto(long id, ProductoRequestDto dto){
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
@@ -115,28 +79,35 @@ public class ProductoService {
 
 		ProductoValidate.validate(productoExistente);
 
-		return productoRepository.save(productoExistente);
+		productoRepository.save(productoExistente);
 	}
 
-	/**
-	 * =================================================
-	 * OBTENER PRODUCTOS
-	 * =================================================
-	 */
-	public Page<Productos> obtenerTodosLosProductos(Pageable pageable) {
-		return productoRepository.findAll(pageable);
+
+	public Page<ProductoResponseDto> obtenerTodosLosProductos(Pageable pageable) {
+		Page<Productos> productos = productoRepository.findAll(pageable);
+		return productos.map(res -> new ProductoResponseDto(
+						res.getNombre(),
+						res.getPrecio(),
+						res.getStock_actual(),
+						res.getStock_minimo(),
+						res.getCategoria().getNombre(),
+						res.getProveedor() != null ? res.getProveedor().getNombre() : null
+		));
 	}
 
-	public Productos obtenerProductoPorId(Long id) {
-		return productoRepository.findById(id)
+	public ProductoResponseDto obtenerProductoPorId(Long id) {
+		Productos producto = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
+		return new ProductoResponseDto(
+						producto.getNombre(),
+						producto.getPrecio(),
+						producto.getStock_actual(),
+						producto.getStock_minimo(),
+						producto.getCategoria().getNombre(),
+						producto.getProveedor() != null ? producto.getProveedor().getNombre() : null
+		);
 	}
 
-	/**
-	 * =================================================
-	 * ELIMINAR PRODUCTO
-	 * =================================================
-	 */
 
 	public void eliminarProductoPorId(Long id) {
 		Productos productoExistente = productoRepository.findById(id)

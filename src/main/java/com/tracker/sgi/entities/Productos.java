@@ -44,10 +44,8 @@ public class Productos {
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
-    @JsonIgnore
     private Proveedores proveedor;
 
     @OneToMany(mappedBy = "producto")
-    @JsonIgnore
     private List<MovimientoInventario> movimientos;
 }

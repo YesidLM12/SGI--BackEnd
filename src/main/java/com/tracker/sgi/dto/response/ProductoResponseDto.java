@@ -9,7 +9,7 @@ public record ProductoResponseDto(
     int stock_actual,
     int stock_minimo,
     String categoria,
-    LocalDateTime fecha_creacion
+    String proveedor
 ) {
 }
 

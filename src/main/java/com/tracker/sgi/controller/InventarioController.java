@@ -1,5 +1,6 @@
 package com.tracker.sgi.controller;
 
+import com.tracker.sgi.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.AccessDeniedException;
@@ -27,30 +28,18 @@ import com.tracker.sgi.service.InventarioService;
 @RequiredArgsConstructor
 public class InventarioController {
     private final InventarioService inventarioService;
+    private  final ProductoService productoService;
 
     @GetMapping("/producto")
     public ResponseEntity<Page<ProductoResponseDto>> obtenerTodosLosProductos(
             @PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
-        Page<Productos> productos = inventarioService.obtenerTodosLosProductos(pageable);
-        return ResponseEntity.ok(productos.map(producto -> new ProductoResponseDto(
-                producto.getNombre(),
-                producto.getPrecio(),
-                producto.getStock_actual(),
-                producto.getStock_minimo(),
-                producto.getCategoria().getNombre(),
-                producto.getFecha_creacion())));
+        return ResponseEntity.ok(productoService.obtenerTodosLosProductos(pageable));
+
     }
 
     @GetMapping("/producto/{id}")
     public ResponseEntity<ProductoResponseDto> obtenerProducto(@PathVariable Long id) {
-        Productos producto = inventarioService.obtenerProductoPorId(id);
-        return ResponseEntity.ok(new ProductoResponseDto(
-                producto.getNombre(),
-                producto.getPrecio(),
-                producto.getStock_actual(),
-                producto.getStock_minimo(),
-                producto.getCategoria().getNombre(),
-                producto.getFecha_creacion()));
+        return ResponseEntity.ok(productoService.obtenerProductoPorId(id));
     }
 
     @GetMapping("/movimiento")
