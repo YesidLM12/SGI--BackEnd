@@ -2,6 +2,7 @@ package com.tracker.sgi.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,7 @@ public class Categorias {
     private String descripcion;
 
     @OneToMany(mappedBy = "categoria")
+    @JsonIgnore
     private List<Productos> productos;
 
     public Categorias(Long id, String nombre) {

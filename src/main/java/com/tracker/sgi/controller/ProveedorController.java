@@ -1,16 +1,10 @@
 package com.tracker.sgi.controller;
 
+import com.tracker.sgi.dto.response.ProveedorResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import com.tracker.sgi.dto.request.ProveedorRequestDto;
 import com.tracker.sgi.entities.Proveedores;
@@ -18,20 +12,24 @@ import com.tracker.sgi.service.ProveedorServices;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/proveedores")
+@RequestMapping("/api/proveedores")
 public class ProveedorController {
 
     private final ProveedorServices proveedorServices;
 
     @PostMapping
-    public Proveedores agregarProveedor(@RequestBody ProveedorRequestDto dto) {
-        return proveedorServices.agregarProveedor(dto);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Map<String, String> agregarProveedor(@RequestBody ProveedorRequestDto dto) {
+        proveedorServices.agregarProveedor(dto);
+        return Map.of("message", "Proveedor agregado correctamente");
     }
 
     @GetMapping
-    public Page<Proveedores> listarProveedores(Pageable pageable) {
+    public Page<ProveedorResponseDto> listarProveedores(Pageable pageable) {
         return proveedorServices.listarProveedores(pageable);
     }
 
@@ -47,7 +45,7 @@ public class ProveedorController {
 
     @PatchMapping("/{id}")
     public Proveedores actualizarProveedorParcial(@PathVariable Long id, @RequestBody ProveedorRequestDto dto) {
-        return proveedorServices.actualizarProveedor(id, dto);
+        return proveedorServices.actualizarProveedorParcial(id, dto);
     }
 
     @DeleteMapping("/{id}")

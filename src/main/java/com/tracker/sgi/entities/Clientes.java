@@ -3,6 +3,7 @@ package com.tracker.sgi.entities;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,11 +29,14 @@ public class Clientes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String DNI;
+    @Column(length = 100)
     private String nombre;
+    @Column(length = 100)
     private String apellido;
     private String telefono;
-    @Email
+    @Email(message = "El email debe ser válido", regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
     private String email;
     private LocalDateTime fecha_creacion;
 

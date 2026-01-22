@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.tracker.sgi.dto.request.ClienteRequestDto;
 import com.tracker.sgi.entities.Clientes;
+import com.tracker.sgi.exception.InvalidDataException;
 import com.tracker.sgi.exception.ResourceNotFoundException;
 import com.tracker.sgi.repository.ClientesRepository;
 import com.tracker.sgi.util.validations.ClienteValidate;
@@ -24,12 +25,12 @@ public class ClienteService {
 
     public Clientes crearCliente(ClienteRequestDto dto) {
 
-        if (clienteRepository.findByEmail(dto.email()).isPresent()) {
-            throw new ResourceNotFoundException("El cliente con el email " + dto.email() + " ya está registrado");
+        if (clienteRepository.findByDNI(dto.dni()).isPresent()) {
+            throw new InvalidDataException("El cliente con el DNI " + dto.dni() + " ya está registrado");
         }
 
         Clientes cliente = Clientes.builder()
-                .DNI(dto.DNI())
+                .DNI(dto.dni())
                 .nombre(dto.nombre())
                 .apellido(dto.apellido())
                 .telefono(dto.telefono())
@@ -46,7 +47,7 @@ public class ClienteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con id: " + id));
     }
 
-   public Page<Clientes> obtenerTodosLosClientes(Pageable pageable) {
+    public Page<Clientes> obtenerTodosLosClientes(Pageable pageable) {
         return clienteRepository.findAll(pageable);
     }
 
@@ -71,7 +72,7 @@ public class ClienteService {
             throw new ResourceNotFoundException("El cliente con el email " + dto.email() + " ya está registrado");
         }
 
-        cliente.setDNI(dto.DNI());
+        cliente.setDNI(dto.dni());
         cliente.setNombre(dto.nombre());
         cliente.setApellido(dto.apellido());
         cliente.setTelefono(dto.telefono());

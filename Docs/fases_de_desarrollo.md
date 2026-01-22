@@ -114,7 +114,8 @@ Gestionar las entidades externas relacionadas con el inventario.
 
 ---
 
-## 🧾 FASE 4 – Gestión de Órdenes (Compra y Venta)
+## 🧾 FASE 4 – Gestión de Órdenes (Compra y Venta) ✅
+**Estado**: Completada
 
 ### Objetivo
 

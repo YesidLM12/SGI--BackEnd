@@ -2,6 +2,7 @@ package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.request.ActualizarProductoRequestDto;
 import com.tracker.sgi.dto.request.ProductoRequestDto;
+import com.tracker.sgi.dto.response.ProductoResponseDto;
 import com.tracker.sgi.entities.Categorias;
 import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.exception.InvalidDataException;
@@ -27,7 +28,7 @@ public class ProductoService {
 	private final ProductoRepository productoRepository;
 	private final CategoriaRepository categoriaRepository;
 
-	public Productos agregarProducto(ProductoRequestDto dto) {
+	public ProductoResponseDto agregarProducto(ProductoRequestDto dto) {
 		// Validar que el producto no exista
 		if (productoRepository.findByNombre(dto.nombre()).isPresent()) {
 			throw new InvalidDataException("El producto ya existe");
@@ -47,7 +48,16 @@ public class ProductoService {
 				.build();
 
 		ProductoValidate.validate(producto);
-		return productoRepository.save(producto);
+		productoRepository.save(producto);
+
+		return new ProductoResponseDto(
+						producto.getNombre(),
+						producto.getPrecio(),
+						producto.getStock_actual(),
+						producto.getStock_minimo(),
+						producto.getCategoria().getNombre(),
+						producto.getFecha_creacion()
+		);
 	}
 
 	/**

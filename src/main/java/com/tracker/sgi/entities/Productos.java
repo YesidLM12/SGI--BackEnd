@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,8 +44,10 @@ public class Productos {
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
+    @JsonIgnore
     private Proveedores proveedor;
 
     @OneToMany(mappedBy = "producto")
+    @JsonIgnore
     private List<MovimientoInventario> movimientos;
 }

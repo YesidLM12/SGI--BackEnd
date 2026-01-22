@@ -26,7 +26,7 @@ public class MovimientosService {
 				.cantidad(cantidad)
 				.motivo(motivo != null ? motivo : "Entrada")
 				.fecha_movimiento(LocalDate.now())
-				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.stock_resultante(producto.getStock_actual() + cantidad)
 				.build();
 
 		movimientoInventarioRepository.save(movimiento);
@@ -35,7 +35,6 @@ public class MovimientosService {
 		productoRepository.save(producto);
 		return movimiento;
 	}
-
 
 	public MovimientoInventario salida(Productos producto, int cantidad, String motivo) {
 
@@ -50,11 +49,13 @@ public class MovimientosService {
 				.cantidad(cantidad)
 				.motivo(motivo != null ? motivo : "Salida")
 				.fecha_movimiento(LocalDate.now())
-				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.stock_resultante(producto.getStock_actual() - cantidad)
 				.build();
+
+		producto.setStock_actual(movimiento.getStock_resultante());
+		productoRepository.save(producto);
 		return movimientoInventarioRepository.save(movimiento);
 	}
-
 
 	public MovimientoInventario ajustePositivo(Productos producto, int cantidad, String motivo) {
 
@@ -65,7 +66,7 @@ public class MovimientosService {
 				.cantidad(cantidad)
 				.motivo(motivo != null ? motivo : "Ajuste Positivo")
 				.fecha_movimiento(LocalDate.now())
-				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.stock_resultante(producto.getStock_actual() + cantidad)
 				.build();
 
 		producto.setStock_actual(movimiento.getStock_resultante());
@@ -73,7 +74,6 @@ public class MovimientosService {
 
 		return movimientoInventarioRepository.save(movimiento);
 	}
-
 
 	public MovimientoInventario ajusteNegativo(Productos producto, int cantidad, String motivo) {
 
@@ -88,7 +88,7 @@ public class MovimientosService {
 				.cantidad(cantidad)
 				.motivo(motivo != null ? motivo : "Ajuste Negativo")
 				.fecha_movimiento(LocalDate.now())
-				.stock_resultante(productoRepository.calcularStockActual(producto.getId()))
+				.stock_resultante(producto.getStock_actual() - cantidad)
 				.build();
 
 		producto.setStock_actual(movimiento.getStock_resultante());

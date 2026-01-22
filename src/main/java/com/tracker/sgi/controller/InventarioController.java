@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
 
 import com.tracker.sgi.dto.request.InventarioRequestDto;
+import com.tracker.sgi.dto.response.ProductoResponseDto;
 import com.tracker.sgi.entities.MovimientoInventario;
 import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.service.InventarioService;
@@ -27,13 +29,28 @@ public class InventarioController {
     private final InventarioService inventarioService;
 
     @GetMapping("/producto")
-    public Page<Productos> obtenerTodosLosProductos(@PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
-        return inventarioService.obtenerTodosLosProductos(pageable);
+    public ResponseEntity<Page<ProductoResponseDto>> obtenerTodosLosProductos(
+            @PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
+        Page<Productos> productos = inventarioService.obtenerTodosLosProductos(pageable);
+        return ResponseEntity.ok(productos.map(producto -> new ProductoResponseDto(
+                producto.getNombre(),
+                producto.getPrecio(),
+                producto.getStock_actual(),
+                producto.getStock_minimo(),
+                producto.getCategoria().getNombre(),
+                producto.getFecha_creacion())));
     }
 
     @GetMapping("/producto/{id}")
-    public Productos obtenerProducto(@PathVariable Long id) {
-        return inventarioService.obtenerProductoPorId(id);
+    public ResponseEntity<ProductoResponseDto> obtenerProducto(@PathVariable Long id) {
+        Productos producto = inventarioService.obtenerProductoPorId(id);
+        return ResponseEntity.ok(new ProductoResponseDto(
+                producto.getNombre(),
+                producto.getPrecio(),
+                producto.getStock_actual(),
+                producto.getStock_minimo(),
+                producto.getCategoria().getNombre(),
+                producto.getFecha_creacion()));
     }
 
     @GetMapping("/movimiento")

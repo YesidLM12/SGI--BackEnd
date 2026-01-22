@@ -2,6 +2,7 @@ package com.tracker.sgi.entities;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,12 +24,13 @@ import lombok.Setter;
 @Builder
 @Table(name = "detalles_orden")
 public class DetallesOrden {
-
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "orden_id", nullable = false)
     private Ordenes orden;
 
