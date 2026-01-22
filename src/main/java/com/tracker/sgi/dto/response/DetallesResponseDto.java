@@ -3,9 +3,9 @@ package com.tracker.sgi.dto.response;
 import java.math.BigDecimal;
 
 public record DetallesResponseDto(
-    String productoId,
+    String producto,
     int cantidad,
-    BigDecimal precioUnitario
+    BigDecimal precio_unitario
 ) {
 
 }

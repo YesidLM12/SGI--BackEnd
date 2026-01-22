@@ -100,7 +100,7 @@ public class OrdenService {
 				Productos producto = detalle.getProducto();
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra");
+				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra",orden);
 				movimientoInventarioRepository.save(movimiento);
 			}
 		}
@@ -110,7 +110,7 @@ public class OrdenService {
 				Productos producto = detalle.getProducto();
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.salida(producto,cantidad,"Venta");
+				MovimientoInventario movimiento = movimientoInventarioService.salida(producto,cantidad,"Venta", orden);
 				movimientoInventarioRepository.save(movimiento);
 			}
 

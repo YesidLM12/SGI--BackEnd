@@ -1,6 +1,7 @@
 package com.tracker.sgi.service;
 
 import com.tracker.sgi.entities.MovimientoInventario;
+import com.tracker.sgi.entities.Ordenes;
 import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.exception.InvalidStockMovementException;
 import com.tracker.sgi.repository.MovimientoInventarioRepository;
@@ -9,6 +10,7 @@ import com.tracker.sgi.util.enums.TipoMovimientoEnum;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 
 @Service
@@ -18,7 +20,7 @@ public class MovimientosService {
 	private final ProductoRepository productoRepository;
 	private final MovimientoInventarioRepository movimientoInventarioRepository;
 
-	public MovimientoInventario entrada(Productos producto, int cantidad, String motivo) {
+	public MovimientoInventario entrada(Productos producto, int cantidad, String motivo, Ordenes orden) {
 		MovimientoInventario movimiento = MovimientoInventario
 				.builder()
 				.producto(producto)
@@ -27,16 +29,19 @@ public class MovimientosService {
 				.motivo(motivo != null ? motivo : "Entrada")
 				.fecha_movimiento(LocalDate.now())
 				.stock_resultante(producto.getStock_actual() + cantidad)
+        .orden(orden)
 				.build();
 
 		movimientoInventarioRepository.save(movimiento);
 
 		producto.setStock_actual(movimiento.getStock_resultante());
+
 		productoRepository.save(producto);
 		return movimiento;
 	}
 
-	public MovimientoInventario salida(Productos producto, int cantidad, String motivo) {
+
+	public MovimientoInventario salida(Productos producto, int cantidad, String motivo, Ordenes orden) {
 
 		if (producto.getStock_actual() < cantidad) {
 			throw new InvalidStockMovementException("No hay suficiente stock");
@@ -50,6 +55,7 @@ public class MovimientosService {
 				.motivo(motivo != null ? motivo : "Salida")
 				.fecha_movimiento(LocalDate.now())
 				.stock_resultante(producto.getStock_actual() - cantidad)
+        .orden(orden)
 				.build();
 
 		producto.setStock_actual(movimiento.getStock_resultante());
@@ -57,7 +63,7 @@ public class MovimientosService {
 		return movimientoInventarioRepository.save(movimiento);
 	}
 
-	public MovimientoInventario ajustePositivo(Productos producto, int cantidad, String motivo) {
+	public void ajustePositivo(Productos producto, int cantidad, String motivo) {
 
 		MovimientoInventario movimiento = MovimientoInventario
 				.builder()
@@ -72,10 +78,10 @@ public class MovimientosService {
 		producto.setStock_actual(movimiento.getStock_resultante());
 		productoRepository.save(producto);
 
-		return movimientoInventarioRepository.save(movimiento);
+		movimientoInventarioRepository.save(movimiento);
 	}
 
-	public MovimientoInventario ajusteNegativo(Productos producto, int cantidad, String motivo) {
+	public void ajusteNegativo(Productos producto, int cantidad, String motivo) {
 
 		if (producto.getStock_actual() < cantidad) {
 			throw new InvalidStockMovementException("No hay suficiente stock");
@@ -94,6 +100,6 @@ public class MovimientosService {
 		producto.setStock_actual(movimiento.getStock_resultante());
 		productoRepository.save(producto);
 
-		return movimientoInventarioRepository.save(movimiento);
+		movimientoInventarioRepository.save(movimiento);
 	}
 }
