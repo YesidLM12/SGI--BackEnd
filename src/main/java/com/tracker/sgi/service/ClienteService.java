@@ -1,13 +1,10 @@
 package com.tracker.sgi.service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 import com.tracker.sgi.dto.response.ClienteResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

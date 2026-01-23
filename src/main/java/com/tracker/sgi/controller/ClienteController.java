@@ -1,6 +1,5 @@
 package com.tracker.sgi.controller;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 import com.tracker.sgi.dto.response.ClienteResponseDto;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tracker.sgi.dto.request.ClienteRequestDto;
-import com.tracker.sgi.entities.Clientes;
 import com.tracker.sgi.service.ClienteService;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +42,7 @@ public class ClienteController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Page<ClienteResponseDto>> obtenerClientes(
-            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+            @PageableDefault(sort = "id") Pageable pageable) {
          return ResponseEntity.ok(clienteService.obtenerTodosLosClientes(pageable));
     }
 
