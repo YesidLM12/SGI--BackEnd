@@ -1,7 +1,7 @@
 package com.tracker.sgi.service;
 
-import java.nio.file.AccessDeniedException;
 
+import com.tracker.sgi.dto.response.MovimientoResponseDto;
 import com.tracker.sgi.repository.ProductoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,28 +23,46 @@ public class InventarioService {
     private final ProductoRepository productoRepository;
 
 
-    public Page<MovimientoInventario> obtenerTodosLosMovimientos(Pageable pageable){
-        return movimientoInventarioRepository.findAll(pageable);
+    public Page<MovimientoResponseDto> obtenerTodosLosMovimientos(Pageable pageable){
+        Page<MovimientoInventario> movimiento = movimientoInventarioRepository.findAll(pageable);
+
+        return movimiento.map(res -> new MovimientoResponseDto(
+                res.getProducto().getNombre(),
+                res.getTipo_movimiento(),
+                res.getCantidad(),
+                res.getMotivo(),
+                res.getOrden().getId(),
+                res.getFecha_movimiento(),
+                res.getStock_resultante()
+        ));
     }
 
-    public Page<MovimientoInventario> obtenerMovimientosPorProducto(Long productoId, Pageable pageable){
+    public Page<MovimientoResponseDto> obtenerMovimientosPorProducto(Long productoId, Pageable pageable){
         Page<MovimientoInventario> movimientos = movimientoInventarioRepository.findByProductoId(productoId, pageable);
 
         if (movimientos.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron movimientos para el producto con ID: " + productoId);
         }
 
-        return movimientos;
+        return movimientos.map(res -> new MovimientoResponseDto(
+                res.getProducto().getNombre(),
+                res.getTipo_movimiento(),
+                res.getCantidad(),
+                res.getMotivo(),
+                res.getOrden().getId(),
+                res.getFecha_movimiento(),
+                res.getStock_resultante()
+        ));
     }
 
-    public void ajustePositivoStock(InventarioRequestDto dto) throws AccessDeniedException {
+    public void ajustePositivoStock(InventarioRequestDto dto){
         Productos producto = productoRepository.findById(dto.productoId())
                                      .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
         movimientosService.ajustePositivo(producto, dto.cantidad(), dto.motivo());
 
     }
 
-    public void ajusteNegativoStock(InventarioRequestDto dto) throws AccessDeniedException {
+    public void ajusteNegativoStock(InventarioRequestDto dto){
         Productos producto = productoRepository.findById(dto.productoId())
                                      .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
         movimientosService.ajusteNegativo(producto, dto.cantidad(), dto.motivo());

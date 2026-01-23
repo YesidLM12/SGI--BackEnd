@@ -1,5 +1,5 @@
 package com.tracker.sgi.dto.response;
 
-public record LoginResponseDto(String token) {
+public record LoginResponseDto(String access_token) {
 
 }

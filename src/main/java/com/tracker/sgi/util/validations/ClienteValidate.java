@@ -5,13 +5,14 @@ import com.tracker.sgi.exception.InvalidDataException;
 
 public class ClienteValidate {
 
-    public static void validateEmail(String email) {
+    public static boolean validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             throw new InvalidDataException("El email es obligatorio");
         }
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new InvalidDataException("El email no es válido");
         }
+        return false;
     }
 
     public static void validate(Clientes cliente) {

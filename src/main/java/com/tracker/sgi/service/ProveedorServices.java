@@ -1,6 +1,7 @@
 package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.response.ProveedorResponseDto;
+import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.mappers.ProveedorMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class ProveedorServices {
 
     private final ProveedoresRepository proveedoresRepository;
 
-    public ProveedorResponseDto agregarProveedor(ProveedorRequestDto dto) {
+    public void agregarProveedor(ProveedorRequestDto dto) {
 
         if (proveedoresRepository.findAll().stream().anyMatch(p -> p.getNit_rut().equals(dto.nit_rut()))) {
             throw new InvalidDataException("El proveedor ya existe");
@@ -31,8 +32,6 @@ public class ProveedorServices {
         ProveedorValidate.validate(dto);
         Proveedores proveedor = ProveedorMapper.toEntity(dto);
         proveedoresRepository.save(proveedor);
-
-        return ProveedorMapper.toDto(proveedor);
     }
 
     public Page<ProveedorResponseDto> listarProveedores(Pageable pageable) {
@@ -43,16 +42,26 @@ public class ProveedorServices {
                 proveedor.getNombre(),
                 proveedor.getTelefono(),
                 proveedor.getEmail(),
-                proveedor.getDireccion()));
+                proveedor.getDireccion(),
+                proveedor.getProductos().stream().map(Productos::getNombre).toList()));
     }
 
-    public Proveedores obtenerProveedor(Long id) {
-        return proveedoresRepository.findById(id)
+    public ProveedorResponseDto obtenerProveedor(Long id) {
+        Proveedores proveedor = proveedoresRepository.findById(id)
                 .orElseThrow(() -> new InvalidDataException("El proveedor no existe"));
+        return new ProveedorResponseDto(
+                proveedor.getNit_rut(),
+                proveedor.getNombre(),
+                proveedor.getTelefono(),
+                proveedor.getEmail(),
+                proveedor.getDireccion(),
+                proveedor.getProductos().stream().map(Productos::getNombre).toList()
+        );
     }
 
     public Proveedores actualizarProveedor(Long id, ProveedorRequestDto dto) {
-        Proveedores proveedorExistente = obtenerProveedor(id);
+        Proveedores proveedorExistente = proveedoresRepository.findById(id)
+                .orElseThrow(() -> new InvalidDataException("El proveedor no existe"));
 
         ProveedorValidate.validate(dto);
 
@@ -66,7 +75,8 @@ public class ProveedorServices {
     }
 
     public Proveedores actualizarProveedorParcial(Long id, ProveedorRequestDto dto) {
-        Proveedores proveedorExistente = obtenerProveedor(id);
+        Proveedores proveedorExistente = proveedoresRepository.findById(id)
+                     .orElseThrow(() -> new InvalidDataException("El proveedor no existe"));
 
         ProveedorValidate.validate(dto);
 
@@ -90,7 +100,8 @@ public class ProveedorServices {
     }
 
     public void eliminarProveedor(Long id) {
-        Proveedores proveedorExistente = obtenerProveedor(id);
+        Proveedores proveedorExistente = proveedoresRepository.findById(id)
+                     .orElseThrow(() -> new InvalidDataException("El proveedor no existe"));
         proveedoresRepository.delete(proveedorExistente);
     }
 

@@ -2,6 +2,7 @@ package com.tracker.sgi.mappers;
 
 import com.tracker.sgi.dto.request.ProveedorRequestDto;
 import com.tracker.sgi.dto.response.ProveedorResponseDto;
+import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.entities.Proveedores;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class ProveedorMapper {
 				proveedores.getNombre(),
 				proveedores.getTelefono(),
 				proveedores.getEmail(),
-				proveedores.getDireccion());
+				proveedores.getDireccion(),
+				proveedores.getProductos().stream().map(Productos::getNombre).toList());
 	}
 }

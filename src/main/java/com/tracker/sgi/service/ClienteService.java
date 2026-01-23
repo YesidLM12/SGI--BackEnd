@@ -3,6 +3,7 @@ package com.tracker.sgi.service;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
+import com.tracker.sgi.dto.response.ClienteResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ import com.tracker.sgi.util.validations.ClienteValidate;
 public class ClienteService {
     private final ClientesRepository clienteRepository;
 
-    public Clientes crearCliente(ClienteRequestDto dto) {
+    public void crearCliente(ClienteRequestDto dto) {
 
         if (clienteRepository.findByDNI(dto.dni()).isPresent()) {
             throw new InvalidDataException("El cliente con el DNI " + dto.dni() + " ya está registrado");
@@ -39,33 +40,40 @@ public class ClienteService {
                 .build();
 
         ClienteValidate.validate(cliente);
-        return clienteRepository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
-    public Clientes obtenerClientePorId(Long id) {
-        return clienteRepository.findById(id)
+    public ClienteResponseDto obtenerClientePorId(Long id) {
+        Clientes cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con id: " + id));
+        return new ClienteResponseDto(
+                cliente.getNombre() + " " + cliente.getApellido(),
+                cliente.getEmail(),
+                cliente.getTelefono()
+        );
     }
 
-    public Page<Clientes> obtenerTodosLosClientes(Pageable pageable) {
-        return clienteRepository.findAll(pageable);
+    public Page<ClienteResponseDto> obtenerTodosLosClientes(Pageable pageable) {
+        Page<Clientes> clientes = clienteRepository.findAll(pageable);
+
+        return clientes.map(res -> new ClienteResponseDto(
+                res.getNombre() + " " + res.getApellido(),
+                res.getEmail(),
+                res.getTelefono()
+        ));
+
     }
 
-    public void eliminarCliente(Long id) throws AccessDeniedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            throw new AccessDeniedException("Acción no disponible para el usuario");
-        }
+    public void eliminarCliente(Long id){
+        Clientes cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
         clienteRepository.deleteById(id);
     }
 
-    public Clientes actualizarCliente(Long id, ClienteRequestDto dto) {
-        Clientes cliente = obtenerClientePorId(id);
+    public void actualizarCliente(Long id, ClienteRequestDto dto) {
+        Clientes cliente = clienteRepository.findById(id)
+                                   .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con id: " + id));
 
         if (clienteRepository.findByEmail(dto.email()).isPresent() &&
                 !cliente.getEmail().equals(dto.email())) {
@@ -78,7 +86,7 @@ public class ClienteService {
         cliente.setTelefono(dto.telefono());
         cliente.setEmail(dto.email());
 
-        return clienteRepository.save(cliente);
+        clienteRepository.save(cliente);
     }
 
     public boolean existeClientePorEmail(String email) {

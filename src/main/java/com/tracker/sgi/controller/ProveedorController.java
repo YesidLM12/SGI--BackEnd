@@ -34,7 +34,7 @@ public class ProveedorController {
     }
 
     @GetMapping("/{id}")
-    public Proveedores obtenerProveedor(@PathVariable Long id) {
+    public ProveedorResponseDto obtenerProveedor(@PathVariable Long id) {
         return proveedorServices.obtenerProveedor(id);
     }
     

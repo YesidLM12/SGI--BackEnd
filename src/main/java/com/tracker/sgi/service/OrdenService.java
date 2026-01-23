@@ -1,13 +1,18 @@
 package com.tracker.sgi.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.qos.logback.core.net.server.Client;
 import com.tracker.sgi.dto.response.DetallesResponseDto;
 import com.tracker.sgi.entities.*;
+import com.tracker.sgi.exception.BusinessRuleException;
+import com.tracker.sgi.exception.InvalidDataException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tracker.sgi.repository.DetallesOrdenRepository;
@@ -26,6 +31,7 @@ import com.tracker.sgi.repository.ClientesRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -42,23 +48,39 @@ public class OrdenService {
 
 	@Transactional
 	public void crearOrden(OrdenRequestDto dto) {
-		Proveedores proveedor = proveedoresRepository.findById(dto.proveedorId())
-						                        .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
-
-		Clientes cliente = clientesRepository.findById(dto.clienteId())
-						                   .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-
 		Usuarios usuario = usuarioRepository.findById(dto.usuarioId())
-						                   .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+						                   .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
 		Ordenes orden = Ordenes.builder()
 						                .estado(EstadoOrdenEnum.PENDIENTE)
 						                .fecha(LocalDateTime.now())
-						                .proveedor(proveedor)
-						                .cliente(cliente)
 						                .usuario(usuario)
 						                .tipo(dto.tipo())
 						                .build();
+
+		if ( dto.proveedorId() != null) {
+			Proveedores proveedor = proveedoresRepository.findById(dto.proveedorId())
+							                        .orElseThrow(() -> new ResourceNotFoundException("No existe el proveedor"));
+			orden.setProveedor(proveedor);
+		} else {
+			orden.setProveedor(null);
+		}
+
+		if (dto.clienteId() != null) {
+			Clientes cliente = clientesRepository.findById(dto.clienteId())
+							                   .orElseThrow(() -> new ResourceNotFoundException("No existe el cliente"));
+			orden.setCliente(cliente);
+		} else {
+			orden.setCliente(null);
+		}
+
+		if (orden.getTipo() == TipoOrdenEnum.VENTA && orden.getProveedor() != null) {
+			throw new InvalidDataException("No se puede crear una orden de venta con un proveedor asignado");
+		}
+
+		if (orden.getTipo() == TipoOrdenEnum.COMPRA && orden.getCliente() != null) {
+			throw new InvalidDataException("No se puede crear una orden de compra con un cliente asignado");
+		}
 
 		ordenesRepository.save(orden);
 
@@ -77,6 +99,10 @@ public class OrdenService {
 											                                              : producto.getPrecio())
 							                             .build();
 
+			BigDecimal subtotal = detalleOrden.getPrecio_unitario().multiply(BigDecimal.valueOf(detalle.cantidad()));
+			detalleOrden.setSubtotal(subtotal);
+
+
 			detallesOrdenRepository.save(detalleOrden);
 			detalles.add(detalleOrden);
 		}
@@ -89,15 +115,24 @@ public class OrdenService {
 	@Transactional
 	public void confirmarOrden (Long ordenId){
 		Ordenes orden = ordenesRepository.findById(ordenId)
-						                .orElseThrow(() -> new RuntimeException("Orden no encontrado"));
+						                .orElseThrow(() -> new RuntimeException("Orden no encontrada con el id: " + ordenId));
 
 		orden.setEstado(EstadoOrdenEnum.EN_PROCESO);
 
 		List<DetallesOrden> detalles = orden.getDetalles();
+		List<Productos> productos = new ArrayList<>();
 
 		if (orden.getTipo() == TipoOrdenEnum.COMPRA) {
+
 			for (DetallesOrden detalle : detalles) {
+
 				Productos producto = detalle.getProducto();
+				productos.add(producto);
+				producto.setProveedor(orden.getProveedor());
+
+				Proveedores proveedor = detalle.getProducto().getProveedor();
+				proveedor.setProductos(productos);
+
 				int cantidad = detalle.getCantidad();
 
 				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra",orden);
@@ -131,26 +166,26 @@ public class OrdenService {
 	public Page<OrdenResponseDto> obtenerOrdenes (Pageable pageable) {
 		Page<Ordenes>  ordenes = ordenesRepository.findAll(pageable);
 
-		List<DetallesOrden> detalles = ordenes.getContent().getFirst().getDetalles();
-		List<DetallesResponseDto> detallesResponse = new ArrayList<>();
+		return ordenes.map( orden -> {
+			List<DetallesResponseDto> detallesResponse = orden.getDetalles()
+                               .stream()
+                               .map(detalle -> new DetallesResponseDto(
+																			 detalle.getProducto().getNombre(),
+                                       detalle.getCantidad(),
+                                       detalle.getPrecio_unitario()
+                               ))
+                               .toList();
 
-		for (DetallesOrden detalle : detalles) {
-			DetallesResponseDto response = new DetallesResponseDto(
-							detalle.getProducto().getNombre(),
-							detalle.getCantidad(),
-							detalle.getPrecio_unitario()
-			);
+			return new OrdenResponseDto(
+							orden.getEstado(),
+							orden.getProveedor() != null ? orden.getProveedor().getNombre() : null,
+							orden.getCliente() != null ? orden.getCliente().getNombre() : null,
+							orden.getUsuario() != null ? orden.getUsuario().getNombre() : null,
+							orden.getTipo(),
+							orden.getTotal(),
+							detallesResponse);
 
-			detallesResponse.add(response);
-		}
-		return ordenes.map(res -> new OrdenResponseDto(
-						res.getEstado(),
-						res.getProveedor() != null ? res.getProveedor().getId() : null,
-						res.getCliente() != null ? res.getCliente().getId() : null,
-						res.getUsuario() != null ? res.getUsuario().getId() : null,
-						res.getTipo(),
-						res.getTotal(),
-						detallesResponse));
+		});
 	}
 
 	public OrdenResponseDto obtenerOrdenPorId(Long ordenId) {
@@ -172,9 +207,9 @@ public class OrdenService {
 
 		return new OrdenResponseDto(
 						orden.getEstado(),
-						orden.getProveedor() != null ? orden.getProveedor().getId() : null,
-						orden.getCliente() != null ? orden.getCliente().getId() : null,
-						orden.getUsuario() != null ? orden.getUsuario().getId() : null,
+						orden.getProveedor() != null ? orden.getProveedor().getNombre() : null,
+						orden.getCliente() != null ? orden.getCliente().getNombre() : null,
+						orden.getUsuario() != null ? orden.getUsuario().getNombre() : null,
 						orden.getTipo(),
 						orden.getTotal(),
 						detallesResponse

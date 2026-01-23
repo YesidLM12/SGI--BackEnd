@@ -3,6 +3,7 @@ package com.tracker.sgi.controller;
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
+import com.tracker.sgi.dto.response.ClienteResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -42,20 +43,14 @@ public class ClienteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Page<ClienteRequestDto>> obtenerClientes(
+    public ResponseEntity<Page<ClienteResponseDto>> obtenerClientes(
             @PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        Page<Clientes> response = clienteService.obtenerTodosLosClientes(pageable);
-        return ResponseEntity.ok(response.map(cliente -> new ClienteRequestDto(
-                cliente.getDNI(),
-                cliente.getNombre(),
-                cliente.getApellido(),
-                cliente.getEmail(),
-                cliente.getTelefono())));
+         return ResponseEntity.ok(clienteService.obtenerTodosLosClientes(pageable));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Clientes obtenerClientePorId(@PathVariable Long id) {
+    public ClienteResponseDto obtenerClientePorId(@PathVariable Long id) {
         return clienteService.obtenerClientePorId(id);
     }
 
@@ -73,8 +68,9 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Clientes actualizarCliente(@PathVariable Long id, @RequestBody ClienteRequestDto cliente) {
-        return clienteService.actualizarCliente(id, cliente);
+    public Map<String, String> actualizarCliente(@PathVariable Long id, @RequestBody ClienteRequestDto cliente) {
+        clienteService.actualizarCliente(id, cliente);
+        return Map.of("message", "Cliente actualizado exitosamente");
     }
 
     @PatchMapping("/{id}")
@@ -85,8 +81,9 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, String> eliminarCliente(@PathVariable Long id) throws AccessDeniedException {
+    public Map<String, String> eliminarCliente(@PathVariable Long id){
         clienteService.eliminarCliente(id);
         return Map.of("message", "Cliente eliminado exitosamente");
     }

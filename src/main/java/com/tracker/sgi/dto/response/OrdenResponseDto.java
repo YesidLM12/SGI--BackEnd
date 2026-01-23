@@ -9,9 +9,9 @@ import com.tracker.sgi.util.enums.TipoOrdenEnum;
 
 public record OrdenResponseDto(
 				EstadoOrdenEnum estado,
-				Long proveedorId,
-				Long clienteId,
-				Long usuarioId,
+				String proveedor,
+				String cliente,
+				String usuario,
 				TipoOrdenEnum tipo,
 				BigDecimal total,
 				List<DetallesResponseDto> detalles

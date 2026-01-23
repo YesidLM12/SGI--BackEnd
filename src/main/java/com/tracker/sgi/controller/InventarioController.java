@@ -1,9 +1,9 @@
 package com.tracker.sgi.controller;
 
+import com.tracker.sgi.dto.response.MovimientoResponseDto;
 import com.tracker.sgi.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.AccessDeniedException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.tracker.sgi.dto.request.InventarioRequestDto;
 import com.tracker.sgi.dto.response.ProductoResponseDto;
-import com.tracker.sgi.entities.MovimientoInventario;
-import com.tracker.sgi.entities.Productos;
 import com.tracker.sgi.service.InventarioService;
 
 @RestController
@@ -28,13 +26,12 @@ import com.tracker.sgi.service.InventarioService;
 @RequiredArgsConstructor
 public class InventarioController {
     private final InventarioService inventarioService;
-    private  final ProductoService productoService;
+    private final ProductoService productoService;
 
     @GetMapping("/producto")
     public ResponseEntity<Page<ProductoResponseDto>> obtenerTodosLosProductos(
             @PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
         return ResponseEntity.ok(productoService.obtenerTodosLosProductos(pageable));
-
     }
 
     @GetMapping("/producto/{id}")
@@ -43,26 +40,26 @@ public class InventarioController {
     }
 
     @GetMapping("/movimiento")
-    public Page<MovimientoInventario> obtenerTodosLosMovimientos(
-            @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable) throws AccessDeniedException {
+    public Page<MovimientoResponseDto> obtenerTodosLosMovimientos(
+            @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable){
         return inventarioService.obtenerTodosLosMovimientos(pageable);
     }
 
     @GetMapping("/movimiento/producto/{id}")
-    public Page<MovimientoInventario> obtenerMovimientosPorProducto(@PathVariable Long id,
-            @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable) throws AccessDeniedException {
+    public Page<MovimientoResponseDto> obtenerMovimientosPorProducto(@PathVariable Long id,
+            @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable){
         return inventarioService.obtenerMovimientosPorProducto(id, pageable);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
     @PostMapping("/ajuste/positivo")
-    public void ajustePositivoStock(@RequestBody InventarioRequestDto dto) throws AccessDeniedException {
+    public void ajustePositivoStock(@RequestBody InventarioRequestDto dto){
         inventarioService.ajustePositivoStock(dto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
     @PostMapping("/ajuste/negativo")
-    public void ajusteNegativoStock(@RequestBody InventarioRequestDto dto) throws AccessDeniedException {
+    public void ajusteNegativoStock(@RequestBody InventarioRequestDto dto){
         inventarioService.ajusteNegativoStock(dto);
     }
 }

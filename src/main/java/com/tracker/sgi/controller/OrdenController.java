@@ -27,7 +27,7 @@ public class OrdenController {
         return Map.of("message", "Orden realizada exitosamente.");
     }
 
-    @PostMapping("/confirmar/{id}")
+    @PutMapping("/confirmar/{id}")
     public Map<String, String> confirmarOrden(@PathVariable Long id){
         ordenService.confirmarOrden(id);
         return Map.of("message", "Orden en proceso.");
