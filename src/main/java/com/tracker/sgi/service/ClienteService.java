@@ -62,7 +62,7 @@ public class ClienteService {
     }
 
     public void eliminarCliente(Long id){
-        Clientes cliente = clienteRepository.findById(id)
+        clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
         clienteRepository.deleteById(id);

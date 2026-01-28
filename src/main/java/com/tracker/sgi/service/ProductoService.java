@@ -2,6 +2,7 @@ package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.request.ActualizarProductoRequestDto;
 import com.tracker.sgi.dto.request.ProductoRequestDto;
+import com.tracker.sgi.dto.response.BajoStockResponseDto;
 import com.tracker.sgi.dto.response.ProductoResponseDto;
 import com.tracker.sgi.entities.Categorias;
 import com.tracker.sgi.entities.Productos;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +66,7 @@ public class ProductoService {
 		productoRepository.save(productoExistente);
 	}
 
-	public void actualizarProductoCompleto(long id, ProductoRequestDto dto){
+	public void actualizarProductoCompleto(long id, ProductoRequestDto dto) {
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
@@ -82,37 +84,37 @@ public class ProductoService {
 		productoRepository.save(productoExistente);
 	}
 
-
 	public Page<ProductoResponseDto> obtenerTodosLosProductos(Pageable pageable) {
 		Page<Productos> productos = productoRepository.findAll(pageable);
 		return productos.map(res -> new ProductoResponseDto(
-						res.getNombre(),
-						res.getPrecio(),
-						res.getStock_actual(),
-						res.getStock_minimo(),
-						res.getCategoria().getNombre(),
-						res.getProveedor() != null ? res.getProveedor().getNombre() : null
-		));
+				res.getNombre(),
+				res.getPrecio(),
+				res.getStock_actual(),
+				res.getStock_minimo(),
+				res.getCategoria().getNombre(),
+				res.getProveedor() != null ? res.getProveedor().getNombre() : null));
 	}
 
 	public ProductoResponseDto obtenerProductoPorId(Long id) {
 		Productos producto = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 		return new ProductoResponseDto(
-						producto.getNombre(),
-						producto.getPrecio(),
-						producto.getStock_actual(),
-						producto.getStock_minimo(),
-						producto.getCategoria().getNombre(),
-						producto.getProveedor() != null ? producto.getProveedor().getNombre() : null
-		);
+				producto.getNombre(),
+				producto.getPrecio(),
+				producto.getStock_actual(),
+				producto.getStock_minimo(),
+				producto.getCategoria().getNombre(),
+				producto.getProveedor() != null ? producto.getProveedor().getNombre() : null);
 	}
-
 
 	public void eliminarProductoPorId(Long id) {
 		Productos productoExistente = productoRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
 		productoRepository.delete(productoExistente);
+	}
+
+	public Page<BajoStockResponseDto> alertaBajoStock(Pageable pageable) {
+		return productoRepository.findProductosConBajoStock(pageable);
 	}
 }

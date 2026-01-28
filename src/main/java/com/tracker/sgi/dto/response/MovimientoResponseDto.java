@@ -2,7 +2,6 @@ package com.tracker.sgi.dto.response;
 
 import com.tracker.sgi.util.enums.TipoMovimientoEnum;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record MovimientoResponseDto(

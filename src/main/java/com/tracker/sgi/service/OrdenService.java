@@ -5,14 +5,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.qos.logback.core.net.server.Client;
 import com.tracker.sgi.dto.response.DetallesResponseDto;
 import com.tracker.sgi.entities.*;
-import com.tracker.sgi.exception.BusinessRuleException;
 import com.tracker.sgi.exception.InvalidDataException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tracker.sgi.repository.DetallesOrdenRepository;
@@ -31,7 +28,6 @@ import com.tracker.sgi.repository.ClientesRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Service
 @RequiredArgsConstructor
