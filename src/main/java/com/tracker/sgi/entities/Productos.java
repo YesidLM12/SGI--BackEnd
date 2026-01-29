@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tracker.sgi.util.enums.EstadoStockEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,6 +38,7 @@ public class Productos {
     private int stock_minimo;
     private boolean disponible;
     private LocalDateTime fecha_creacion;
+    private EstadoStockEnum estadoStock;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)

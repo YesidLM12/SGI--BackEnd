@@ -45,6 +45,10 @@ public class MovimientoInventario {
     @JoinColumn(name = "orden_id")
     private Ordenes orden;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuarios usuario;
+
     private LocalDate fecha_movimiento;
     private int stock_resultante;
 

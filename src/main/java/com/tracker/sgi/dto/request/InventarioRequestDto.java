@@ -7,6 +7,6 @@ public record InventarioRequestDto(
     String motivo,
     Long proveedorId,
     Long clienteId
-) {
+){
 
 }

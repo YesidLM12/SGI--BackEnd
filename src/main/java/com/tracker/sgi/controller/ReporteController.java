@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tracker.sgi.dto.response.BajoStockResponseDto;
 import com.tracker.sgi.dto.response.MovimientoResponseDto;
-import com.tracker.sgi.dto.response.ProductoMasVendidoDto;
+import com.tracker.sgi.dto.request.ProductoMasVendidoDto;
 import com.tracker.sgi.service.ReporteService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class ReporteController {
     private final ReporteService reporteService;
 
-    @GetMapping("/productos-mas-vendidos")
+    @GetMapping("/productos-top")
     public List<ProductoMasVendidoDto> getProductoMasVendido() {
         return reporteService.getProductoMasVendido();
     }
@@ -43,11 +42,6 @@ public class ReporteController {
     @GetMapping("/productos-mas-vendidos-por-categoria")
     public List<ProductoMasVendidoDto> getProductoMasVendidoPorCategoria(@RequestParam Long categoriaId) {
         return reporteService.getProductoMasVendidoPorCategoria(categoriaId);
-    }
-
-    @GetMapping("/productos-con-bajo-stock")
-    public Page<BajoStockResponseDto> getProductosConBajoStock(Pageable pageable) {
-        return reporteService.getProductosConBajoStock(pageable);
     }
 
     @GetMapping("/movimientos-por-rango-fecha")

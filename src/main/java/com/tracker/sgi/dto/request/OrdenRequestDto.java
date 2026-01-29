@@ -10,5 +10,4 @@ public record OrdenRequestDto(
         Long clienteId,
         Long usuarioId,
         List<DetallesRequestDto> detalles) {
-
 }
