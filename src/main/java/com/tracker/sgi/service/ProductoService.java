@@ -2,7 +2,6 @@ package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.request.ActualizarProductoRequestDto;
 import com.tracker.sgi.dto.request.ProductoRequestDto;
-import com.tracker.sgi.dto.response.BajoStockResponseDto;
 import com.tracker.sgi.dto.response.ProductoResponseDto;
 import com.tracker.sgi.entities.Categorias;
 import com.tracker.sgi.entities.Productos;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -112,9 +110,5 @@ public class ProductoService {
 				.orElseThrow(() -> new ResourceNotFoundException("El producto no existe"));
 
 		productoRepository.delete(productoExistente);
-	}
-
-	public Page<BajoStockResponseDto> alertaBajoStock(Pageable pageable) {
-		return productoRepository.findProductosConBajoStock(pageable);
 	}
 }

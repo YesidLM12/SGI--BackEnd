@@ -1,4 +1,4 @@
-package com.tracker.sgi.dto.response;
+package com.tracker.sgi.dto.request;
 
 import java.math.BigDecimal;
 

@@ -1,5 +1,8 @@
 package com.tracker.sgi.repository;
 
+import com.tracker.sgi.dto.request.AlertaStockDto;
+import com.tracker.sgi.dto.request.AlertasStockProjection;
+import com.tracker.sgi.util.enums.EstadoStockEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,9 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.tracker.sgi.dto.response.BajoStockResponseDto;
 import com.tracker.sgi.entities.Productos;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -30,13 +33,5 @@ public interface ProductoRepository extends JpaRepository<Productos, Long> {
 
     Optional<Productos> findByNombre(String nombre);
 
-    @Query("""
-            SELECT new com.tracker.sgi.dto.response.BajoStockResponseDto(
-                p.nombre,
-                p.stock_actual
-            )
-            FROM Productos p
-            WHERE p.stock_actual <= p.stock_minimo
-            """)
-    Page<BajoStockResponseDto> findProductosConBajoStock(Pageable pageable);
+
 }

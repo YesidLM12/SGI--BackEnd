@@ -32,4 +32,7 @@ public class Usuarios {
 
 	@OneToMany(mappedBy = "usuario")
 	private List<Ordenes> ordenes;
+
+	@OneToMany(mappedBy = "usuario")
+	private List<MovimientoInventario> movimientos;
 }

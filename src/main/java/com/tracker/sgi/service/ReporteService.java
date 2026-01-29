@@ -5,13 +5,13 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.tracker.sgi.dto.request.AlertaStockDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.tracker.sgi.dto.response.BajoStockResponseDto;
 import com.tracker.sgi.dto.response.MovimientoResponseDto;
-import com.tracker.sgi.dto.response.ProductoMasVendidoDto;
+import com.tracker.sgi.dto.request.ProductoMasVendidoDto;
 import com.tracker.sgi.exception.InvalidDataException;
 import com.tracker.sgi.repository.DetallesOrdenRepository;
 import com.tracker.sgi.repository.MovimientoInventarioRepository;
@@ -38,10 +38,6 @@ public class ReporteService {
 
     public List<ProductoMasVendidoDto> getProductoMasVendidoPorCategoria(Long categoriaId) {
         return detallesOrdenRepository.findProductoMasVendidoPorCategoria(categoriaId);
-    }
-
-    public Page<BajoStockResponseDto> getProductosConBajoStock(Pageable pageable) {
-        return productoRepository.findProductosConBajoStock(pageable);
     }
 
     public Page<MovimientoResponseDto> getMovimientosByDateRange(LocalDateTime fechaInicio, LocalDateTime fechaFin,
