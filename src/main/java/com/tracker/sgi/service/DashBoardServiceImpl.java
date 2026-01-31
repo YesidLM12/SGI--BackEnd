@@ -2,6 +2,8 @@ package com.tracker.sgi.service;
 
 import com.tracker.sgi.dto.request.*;
 import com.tracker.sgi.dto.response.DashboardResponseDto;
+import com.tracker.sgi.exception.InvalidDataException;
+import com.tracker.sgi.projections.DashboardResumenProjection;
 import com.tracker.sgi.repository.DashboardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,18 @@ public class DashBoardServiceImpl implements DashboardService {
 
 	@Override
 	public DashboardResponseDto obtenerDashboard(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+		if (fechaInicio.isAfter(fechaFin)) {
+			throw new InvalidDataException("Rango de fecha ingresado no válido. " + fechaInicio + " e " + fechaFin);
+		}
+
+		if (fechaInicio == null) {
+			fechaInicio = LocalDateTime.now();
+		}
+
+		if (fechaFin == null) {
+			fechaFin = fechaInicio.minusDays(30);
+		}
+
 		DashboardResumenProjection resumenProjection = dashboardRepository.obtenerResumen(fechaInicio, fechaFin);
 
 		DashboardResumenDto resumen = new DashboardResumenDto(

@@ -1,4 +1,4 @@
-package com.tracker.sgi.dto.request;
+package com.tracker.sgi.projections;
 
 public interface MovimientoMensualProjection {
 	String getPeriodo();

@@ -67,7 +67,7 @@ El backend de **SGI** es una API REST desarrollada con Spring Boot que gestiona 
 
 * Core funcional implementado.
 * Lógica de negocio estable.
-* Pendiente: reportes y documentación OpenAPI.
+* Pendiente: documentación OpenAPI.
 
 ---
 

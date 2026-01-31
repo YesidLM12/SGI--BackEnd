@@ -3,6 +3,7 @@ package com.tracker.sgi.service;
 import com.tracker.sgi.entities.MovimientoInventario;
 import com.tracker.sgi.entities.Ordenes;
 import com.tracker.sgi.entities.Productos;
+import com.tracker.sgi.entities.Usuarios;
 import com.tracker.sgi.exception.BusinessRuleException;
 import com.tracker.sgi.exception.InvalidStockMovementException;
 import com.tracker.sgi.repository.MovimientoInventarioRepository;
@@ -21,7 +22,7 @@ public class MovimientosService {
 	private final ProductoRepository productoRepository;
 	private final MovimientoInventarioRepository movimientoInventarioRepository;
 
-	public MovimientoInventario entrada(Productos producto, int cantidad, String motivo, Ordenes orden) {
+	public MovimientoInventario entrada(Productos producto, int cantidad, String motivo, Ordenes orden, Usuarios usuario) {
 		Integer stockActual = obtenerStockActual(producto.getId());
 
 		if (stockActual == null) {
@@ -37,6 +38,7 @@ public class MovimientosService {
 				.fecha_movimiento(LocalDate.now())
 				.stock_resultante(stockActual + cantidad)
         .orden(orden)
+        .usuario(usuario)
 				.build();
 
 		movimientoInventarioRepository.save(movimiento);
@@ -48,7 +50,7 @@ public class MovimientosService {
 	}
 
 
-	public MovimientoInventario salida(Productos producto, int cantidad, String motivo, Ordenes orden) {
+	public MovimientoInventario salida(Productos producto, int cantidad, String motivo, Ordenes orden, Usuarios usuario) {
 
 		Integer stockActual = obtenerStockActual(producto.getId());
 
@@ -67,6 +69,7 @@ public class MovimientosService {
 				.fecha_movimiento(LocalDate.now())
 				.stock_resultante(stockActual - cantidad)
         .orden(orden)
+        .usuario(usuario)
 				.build();
 
 

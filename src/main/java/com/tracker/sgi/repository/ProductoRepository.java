@@ -1,10 +1,5 @@
 package com.tracker.sgi.repository;
 
-import com.tracker.sgi.dto.request.AlertaStockDto;
-import com.tracker.sgi.dto.request.AlertasStockProjection;
-import com.tracker.sgi.util.enums.EstadoStockEnum;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.tracker.sgi.entities.Productos;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
