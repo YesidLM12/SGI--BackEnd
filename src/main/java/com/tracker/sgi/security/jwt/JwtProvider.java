@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +19,32 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtProvider {
     private JwtProperties jwtProperties;
+    private Key secretKey;
+
+    @PostConstruct
+    public void init() {
+        this.secretKey = Keys.hmacShaKeyFor(
+                jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    private Key getSecretKey() {
+        return secretKey;
+    }
 
     public JwtProvider(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
     }
 
-    private Key getSecretKey() {
-        return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+    @PostConstruct
+    public void validateConfig() {
+        String secret = jwtProperties.getSecret();
+
+        if(secret == null || secret.length() < 32) {
+            throw new IllegalArgumentException("JWT_SECRET no está configurado o es demasiado corto");
+        }
     }
+
 
     public String generateToken(UserDetails userDetails) {
         /*
