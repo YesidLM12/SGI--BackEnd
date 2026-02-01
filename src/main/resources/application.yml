@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+jwt:
+  expiration: 3600000

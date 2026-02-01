@@ -113,6 +113,8 @@ public class OrdenService {
 		Ordenes orden = ordenesRepository.findById(ordenId)
 						                .orElseThrow(() -> new RuntimeException("Orden no encontrada con el id: " + ordenId));
 
+		Usuarios usuario = orden.getUsuario();
+
 		orden.setEstado(EstadoOrdenEnum.EN_PROCESO);
 
 		List<DetallesOrden> detalles = orden.getDetalles();
@@ -131,7 +133,7 @@ public class OrdenService {
 
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra",orden);
+				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra",orden, usuario);
 				movimientoInventarioRepository.save(movimiento);
 			}
 		}
@@ -141,7 +143,7 @@ public class OrdenService {
 				Productos producto = detalle.getProducto();
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.salida(producto,cantidad,"Venta", orden);
+				MovimientoInventario movimiento = movimientoInventarioService.salida(producto,cantidad,"Venta", orden, usuario);
 				movimientoInventarioRepository.save(movimiento);
 			}
 

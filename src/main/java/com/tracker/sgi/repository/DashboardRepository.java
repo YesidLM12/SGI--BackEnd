@@ -1,8 +1,7 @@
 package com.tracker.sgi.repository;
 
-import com.tracker.sgi.dto.request.*;
 import com.tracker.sgi.entities.MovimientoInventario;
-import org.springframework.data.domain.Pageable;
+import com.tracker.sgi.projections.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
