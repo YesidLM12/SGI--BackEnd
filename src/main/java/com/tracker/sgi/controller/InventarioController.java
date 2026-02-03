@@ -50,16 +50,4 @@ public class InventarioController {
             @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable){
         return inventarioService.obtenerMovimientosPorProducto(id, pageable);
     }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
-    @PostMapping("/ajuste/positivo")
-    public void ajustePositivoStock(@RequestBody InventarioRequestDto dto){
-        inventarioService.ajustePositivoStock(dto);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
-    @PostMapping("/ajuste/negativo")
-    public void ajusteNegativoStock(@RequestBody InventarioRequestDto dto){
-        inventarioService.ajusteNegativoStock(dto);
-    }
 }

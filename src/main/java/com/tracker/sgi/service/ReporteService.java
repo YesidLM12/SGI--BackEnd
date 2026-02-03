@@ -87,7 +87,6 @@ public class ReporteService {
                     movimiento.producto() + "," +
                             movimiento.tipo_movimiento() + "," +
                             movimiento.cantidad() + "," +
-                            movimiento.motivo() + "," +
                             movimiento.orden_id() + "," +
                             movimiento.fecha_movimiento() + "," +
                             movimiento.stock_resultante());

@@ -1,5 +1,6 @@
 package com.tracker.sgi.service;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import com.tracker.sgi.security.jwt.JwtProvider;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!test")
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;

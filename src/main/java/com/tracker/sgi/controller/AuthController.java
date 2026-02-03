@@ -1,5 +1,6 @@
 package com.tracker.sgi.controller;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tracker.sgi.dto.request.LoginRequestDto;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequiredArgsConstructor
+@Profile("!test")
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
