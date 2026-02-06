@@ -26,6 +26,4 @@ public interface ProductoRepository extends JpaRepository<Productos, Long> {
     Integer calcularStockActual(@Param("productoId") Long productoId);
 
     Optional<Productos> findByNombre(String nombre);
-
-
 }

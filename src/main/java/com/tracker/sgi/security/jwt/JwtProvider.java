@@ -6,6 +6,7 @@ import java.util.Date;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Component
+@Profile("!test")
 public class JwtProvider {
     private JwtProperties jwtProperties;
     private Key secretKey;

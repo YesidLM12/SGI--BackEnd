@@ -28,7 +28,7 @@ public class InventarioController {
     private final InventarioService inventarioService;
     private final ProductoService productoService;
 
-    @GetMapping("/producto")
+    @GetMapping("/productos")
     public ResponseEntity<Page<ProductoResponseDto>> obtenerTodosLosProductos(
             @PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
         return ResponseEntity.ok(productoService.obtenerTodosLosProductos(pageable));
@@ -49,17 +49,5 @@ public class InventarioController {
     public Page<MovimientoResponseDto> obtenerMovimientosPorProducto(@PathVariable Long id,
             @PageableDefault(size = 10, sort = "fecha_movimiento") Pageable pageable){
         return inventarioService.obtenerMovimientosPorProducto(id, pageable);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
-    @PostMapping("/ajuste/positivo")
-    public void ajustePositivoStock(@RequestBody InventarioRequestDto dto){
-        inventarioService.ajustePositivoStock(dto);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
-    @PostMapping("/ajuste/negativo")
-    public void ajusteNegativoStock(@RequestBody InventarioRequestDto dto){
-        inventarioService.ajusteNegativoStock(dto);
     }
 }

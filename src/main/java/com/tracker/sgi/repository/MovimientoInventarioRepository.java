@@ -22,7 +22,6 @@ public interface MovimientoInventarioRepository extends JpaRepository<Movimiento
                 m.producto.nombre,
                 m.tipo_movimiento,
                 m.cantidad,
-                m.motivo,
                 m.orden.id,
                 m.fecha_movimiento,
                 m.stock_resultante

@@ -8,6 +8,7 @@ import java.util.List;
 import com.tracker.sgi.dto.response.DetallesResponseDto;
 import com.tracker.sgi.entities.*;
 import com.tracker.sgi.exception.InvalidDataException;
+import com.tracker.sgi.util.enums.TipoMovimientoEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,13 +35,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrdenService {
 
 	private final OrdenRepository ordenesRepository;
-	private final MovimientoInventarioRepository movimientoInventarioRepository;
 	private final ProveedoresRepository proveedoresRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final DetallesOrdenRepository detallesOrdenRepository;
 	private final ProductoRepository productosRepository;
 	private final ClientesRepository clientesRepository;
-	private final MovimientosService movimientoInventarioService;
+	private final MovimientoInventarioRepository  movimientoInventarioRepository;
+	private final InventarioService inventarioService;
 
 	@Transactional
 	public void crearOrden(OrdenRequestDto dto) {
@@ -86,7 +87,8 @@ public class OrdenService {
 			Productos producto = productosRepository.findById(detalle.productoId())
 							                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-			DetallesOrden detalleOrden = DetallesOrden.builder()
+			DetallesOrden detalleOrden = DetallesOrden
+							                             .builder()
 							                             .orden(orden)
 							                             .producto(producto)
 							                             .cantidad(detalle.cantidad())
@@ -133,7 +135,10 @@ public class OrdenService {
 
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.entrada(producto,cantidad,"Compra",orden, usuario);
+				MovimientoInventario movimiento = inventarioService.registrarMovimiento(
+								producto, TipoMovimientoEnum.ENTRADA, cantidad);
+
+				movimiento.setOrden(orden);
 				movimientoInventarioRepository.save(movimiento);
 			}
 		}
@@ -143,8 +148,8 @@ public class OrdenService {
 				Productos producto = detalle.getProducto();
 				int cantidad = detalle.getCantidad();
 
-				MovimientoInventario movimiento = movimientoInventarioService.salida(producto,cantidad,"Venta", orden, usuario);
-				movimientoInventarioRepository.save(movimiento);
+				inventarioService.registrarMovimiento(
+								producto, TipoMovimientoEnum.SALIDA, cantidad);
 			}
 
 			orden.setEstado(EstadoOrdenEnum.COMPLETADO);

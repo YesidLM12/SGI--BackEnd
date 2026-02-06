@@ -1,6 +1,7 @@
 package com.tracker.sgi.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.tracker.sgi.util.enums.TipoMovimientoEnum;
 
@@ -49,7 +50,7 @@ public class MovimientoInventario {
     @JoinColumn(name = "usuario_id")
     private Usuarios usuario;
 
-    private LocalDate fecha_movimiento;
+    private LocalDateTime fecha_movimiento;
     private int stock_resultante;
 
 }

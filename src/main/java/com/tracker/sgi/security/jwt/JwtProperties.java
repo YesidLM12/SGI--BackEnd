@@ -2,6 +2,7 @@ package com.tracker.sgi.security.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Setter
 @ConfigurationProperties(prefix = "jwt")
 @EnableConfigurationProperties(JwtProperties.class)
+@Profile("!test")
 public class JwtProperties {
     private String secret;
     private long expiration;
