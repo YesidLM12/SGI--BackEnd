@@ -30,7 +30,6 @@ class InventarioServiceTest {
 	@Spy
 	@InjectMocks
 	private InventarioService inventarioService;
-
 	@Test
 	void debeRegistrarSalidaCuandoHayStockSuficiente() {
 		Productos producto = new Productos();
@@ -65,7 +64,5 @@ class InventarioServiceTest {
 		
 		verify(productoRepository, never()).save(producto);
 		verify(movimientoInventarioRepository, never()).save(any());
-		
 	}
-
 }

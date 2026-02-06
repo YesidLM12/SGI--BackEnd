@@ -28,7 +28,7 @@ public class InventarioController {
     private final InventarioService inventarioService;
     private final ProductoService productoService;
 
-    @GetMapping("/producto")
+    @GetMapping("/productos")
     public ResponseEntity<Page<ProductoResponseDto>> obtenerTodosLosProductos(
             @PageableDefault(size = 10, sort = "nombre") Pageable pageable) {
         return ResponseEntity.ok(productoService.obtenerTodosLosProductos(pageable));
